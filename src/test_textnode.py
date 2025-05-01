@@ -2,7 +2,7 @@ import unittest
 
 from textnode import TextNode, TextType
 from htmlnode import HTMLNode, LeafNode, ParentNode
-
+from text_processing import text_node_to_html_node
 
 class TestTextNode(unittest.TestCase):
     def test_eq(self):
@@ -59,6 +59,12 @@ class TestTextNode(unittest.TestCase):
         node = ParentNode("div", [])
         with self.assertRaises(ValueError):
             node.to_html()
+
+    def test_text(self):
+        node = TextNode("This is a text node", TextType.NORMAL)
+        html_node = text_node_to_html_node(node)
+        self.assertEqual(html_node.tag, None)
+        self.assertEqual(html_node.value, "This is a text node")
 
 if __name__ == "__main__":
     unittest.main()
