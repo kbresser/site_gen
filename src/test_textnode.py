@@ -90,6 +90,29 @@ def test_split_images(self):
         new_nodes,
     )
 
+    def test_text_to_textnode():
+        node = TextNode("This is a text node", TextType.TEXT)
+        html_node = text_node_to_html_node(node)
+        self.assertEqual(html_node.tag, None)
+        self.assertEqual(html_node.value, "This is a text node")
+    
+    def test_text_to_textnodes_mixed_markdown():
+        input_str = "This is **bold** and _italic_ and `code` and ![img](img.png) and [link](example.com)"
+        expected = [
+            TextNode("This is ", TextType.TEXT),
+            TextNode("bold", TextType.BOLD),
+            TextNode(" and ", TextType.TEXT),
+            TextNode("italic", TextType.ITALIC),
+            TextNode(" and ", TextType.TEXT),
+            TextNode("code", TextType.CODE),
+            TextNode(" and ", TextType.TEXT),
+            TextNode("img", TextType.IMAGE, "img.png"),
+            TextNode(" and ", TextType.TEXT),
+            TextNode("link", TextType.LINK, "example.com"),
+        ]
+        output = text_to_textnodes(input_str)
+        assert output == expected
+
 
 if __name__ == "__main__":
     unittest.main()
