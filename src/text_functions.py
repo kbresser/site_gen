@@ -126,3 +126,9 @@ def text_to_textnodes(text):
     nodes = split_nodes_image(nodes)
     nodes = split_nodes_link(nodes)
     return nodes
+
+def extract_title(markdown):
+    if markdown.startswith("# "):
+        return markdown[2:].strip()
+    else:
+        raise ValueError("Invalid title format. Title should start with '# '")
