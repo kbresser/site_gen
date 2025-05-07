@@ -1,7 +1,13 @@
 import os
 import shutil
+import sys
 from textnode import TextNode, TextType
 from page_generator import generate_pages_recursive
+
+basepath = "/"
+
+if len(sys.argv) > 1:
+    basepath = sys.argv[1]
 
 def copy_static_files(src_dir, dest_dir):
     if os.path.exists(dest_dir):
@@ -28,13 +34,13 @@ def copy_static_files(src_dir, dest_dir):
 def main():
 
     source_dir = "static"
-    dest_dir = "public"
+    dest_dir = "docs"
 
     print(f"Copying static files from {source_dir} to {dest_dir}...")
     copy_static_files(source_dir, dest_dir)
     print("Static files copied successfully!")
     
-    generate_pages_recursive("content", "template.html", "public")
+    generate_pages_recursive(basepath, "content", "template.html", "docs")
 
 if __name__ == "__main__":
     main()
