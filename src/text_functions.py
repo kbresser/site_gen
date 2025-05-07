@@ -128,7 +128,8 @@ def text_to_textnodes(text):
     return nodes
 
 def extract_title(markdown):
-    if markdown.startswith("# "):
-        return markdown[2:].strip()
-    else:
-        raise ValueError("Invalid title format. Title should start with '# '")
+    lines = markdown.split("\n")
+    for line in lines:
+        if line.startswith("# "):
+            return line[2:].strip()
+    raise ValueError("Invalid title format. Title should start with '# '")

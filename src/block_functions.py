@@ -25,9 +25,9 @@ def block_to_block_type(block):
         return BlockType.HEADING
     if block.startswith("```") and block.endswith("```"):
         return BlockType.CODE
-    if block.startswith("> "):
+    if block.startswith(">"):
         lines = block.split("\n")
-        if all(line.startswith("> ") for line in lines):
+        if all(line == ">" or line.startswith("> ") for line in lines):
             return BlockType.QUOTE
     if block.startswith("- "):
         lines = block.split("\n")
@@ -61,7 +61,10 @@ def markdown_to_html_node(markdown):
     return div_node
 
 def text_to_children(text):
-    text_nodes = split_nodes_delimiter([TextNode(text, TextType.TEXT)], "**", TextType.BOLD)
+    text_nodes = [TextNode(text, TextType.TEXT)]
+    text_nodes = split_nodes_image(text_nodes)
+    text_nodes = split_nodes_link(text_nodes)
+    text_nodes = split_nodes_delimiter(text_nodes, "**", TextType.BOLD)
     text_nodes = split_nodes_delimiter(text_nodes, "_", TextType.ITALIC)
     text_nodes = split_nodes_delimiter(text_nodes, "`", TextType.CODE)
 
@@ -95,15 +98,15 @@ def convert_code_to_html_node(text):
 
 def convert_quote_to_html_node(text):
     lines = text.split("\n")
-    clean_lines = []
+    new_lines = []
     for line in lines:
-        if line.startswith("> "):
-            clean_lines.append(line[2:])
-        else:
-            clean_lines.append(line)
-    content = "\n".join(clean_lines)
-    return HTMLNode("blockquote", None, text_to_children(content), None)
-
+        if not line.startswith(">"):
+            raise ValueError("invalid quote block")
+        new_lines.append(line.lstrip(">").strip())
+    content = " ".join(new_lines)
+    children = text_to_children(content)
+    return ParentNode("blockquote", children)
+    
 def convert_unordered_list_to_html_node(text):
     items = text.split("\n")
     children = []

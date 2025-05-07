@@ -1,7 +1,7 @@
 import os
 import shutil
 from textnode import TextNode, TextType
-from page_generator import generate_page
+from page_generator import generate_pages_recursive
 
 def copy_static_files(src_dir, dest_dir):
     if os.path.exists(dest_dir):
@@ -34,7 +34,7 @@ def main():
     copy_static_files(source_dir, dest_dir)
     print("Static files copied successfully!")
     
-    generate_page("content/index.md", "site_gen/template.html", "public/index.html")
+    generate_pages_recursive("content", "template.html", "public")
 
 if __name__ == "__main__":
     main()

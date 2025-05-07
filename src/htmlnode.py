@@ -19,7 +19,10 @@ class HTMLNode:
         return f"<{self.tag}>{self.value}{children_html}</{self.tag}>"
     
     def props_to_html(self):
-        return " " + " ".join([f'{key}="{value}"' for key, value in self.props.items()]) if self.props else ""
+        return (
+            " " + " ".join(f'{k}="{v}"' for k, v in self.props.items())
+            if self.props else ""
+        )
     
     def __repr__(self):
         return f"HTMLNode({self.tag}, {self.value}, {self.children}, {self.props})"
@@ -29,11 +32,14 @@ class LeafNode(HTMLNode):
         super().__init__(tag, value, props=props)
 
     def to_html(self):
+        void_elements = {"img", "br", "hr", "meta", "link", "base", "area", "col", "embed", "param", "source"}
+        if self.tag in void_elements:
+            return f"<{self.tag}{self.props_to_html()}>"
         if self.tag is None:
             return self.value if self.value is not None else ""
         if self.value is None:
             return f"<{self.tag}></{self.tag}>"
-        return f"<{self.tag}>{self.value}</{self.tag}>"
+        return f"<{self.tag}{self.props_to_html()}>{self.value}</{self.tag}>"
     
     def __repr__(self):
         return f"LeafNode({self.tag}, {self.value}, {self.props})"
@@ -47,7 +53,7 @@ class ParentNode(HTMLNode):
             raise ValueError("ParentNode must have a tag")
         
         # Initialize with the opening tag
-        result = f"<{self.tag}>"
+        result = f"<{self.tag}{self.props_to_html()}>"
         
         # Add content from all children (if any)
         for child in self.children:
